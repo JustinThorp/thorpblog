@@ -1,11 +1,12 @@
 ---
-title: "The Kelly Criterion"
+title: "Its About Survival"
 author: "Justin Thorp"
 date: "2023-11-03"
 categories: [news, code, analysis]
 image: "image.jpg"
 execute: 
   echo: false
+draft: true
 ---
 
 ```{python}
@@ -43,17 +44,13 @@ ax.set_xticklabels([f"{np.exp(x):.1e}" for x in range(-80,40,20)])
 None
 ```
 
-So playing this game gives us a very high chance of ending up broke. But we still had a very high expected value so whats going on. In essence there are some sample paths where a simulation ended making an obscene amount of money that drags the expected value up. But the vast majority of players in this game will lose everything.
+So playing this game gives us a very high chance of ending up broke. But we still had a very high average return so what is going on here. In essence there are some sample paths where a simulation ended making an obscene amount of money that drags the expected value up. But the vast majority of players in this game will lose everything.
 
 # Gurantee Not losing
 
--   Introduce Kelly and geometric mean
--   Apply Kelly to previous example
--   The risk of going broke is not worth the return
+As we have shown there are scenarios where a bet can have a positive expected return, but its long run return converges to zero. To get a better idea of the long run return of a bet we should look at the geometric mean instead of the arithmetic mean.
 
-As we have shown there are scenarios where a bet can have a positive expected return, but its long run return converges to zero. However, if we use the geometric mean instead of the arithmetic mean we get a better estimate of our long run return.
-
-The arithmetic mean is the mean that most people think of when they think of the mean. Its the sum of all the values divided the sample size. The geometric mean is when we multiply all our values and take the $n^{th}$ root of the product. The geometric mean better captures the multiplicative nature of returns. So if we look at our toy example we get a geometric mean of $.89$ meaning our CAGR for this game is $-10\%$. See how this is more in line with what are simulations show. A ten percent decrease over 300 trials will wipe out your entire bankroll.
+The arithmetic mean is the mean that most people think of when they think of the mean. Its the sum of all the values divided the sample size. $$\bar{x} = \Sigma_i^n x_i$$ While the geometric mean is when we multiply all our values and take the $n^{th}$ root of the product. The geometric mean better captures the multiplicative nature of returns. So if we look at our game we have a geometric mean of $.89$ meaning our expected return is $-10\%$. This is much more in line with what are simulations show. A ten percent decrease over 300 trials wipes out your entire bankroll.
 
 So now that we know to judge our games off of their geometric mean instead of the arithmetic mean how can we use this to turn our game into a profitable one. Let's change our strategy, instead of betting our entire bankroll lets only bet a fraction. Figure \_ shows the simulation results of the same game but this time only betting $30\%$ of are bankroll each turn. These are radically different results! Instead of being guaranteed to lose money we are almost guaranteed to walk away with a sizable profit.
 
