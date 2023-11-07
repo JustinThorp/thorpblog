@@ -1,0 +1,86 @@
+---
+title: "The Kelly Criterion"
+author: "Justin Thorp"
+date: "2023-11-03"
+categories: [news, code, analysis]
+image: "image.jpg"
+execute: 
+  echo: false
+---
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+# Introduction
+
+How risky should you be when investing. A common phrase when people ask that question is that it depends on your personal risk tolerance. But I don't think this really answers the questions or is actually helpful. When starting to invest you haven't been through a crash, so you have no idea how you will react when you experience a huge drop happens. This could lead to new investor taking on more risk that could hurt their long run returns. You may ask then ask how should investor think about risk. Before I explain let's start with an example.
+
+# Losing a Winners Game
+
+Say there is a fair coin and if it lands heads you double your bet and if it lands tails you lost 60% of your bet. Now the arithmetic average of our game is 1.2 meaning on average we will get a 20% return in our bet. This is seems like a very profitable game for us! An investor may see this average return and may deem the risk of losing $60\%$ acceptable.
+
+```{python}
+np.random.seed(4)
+p = [.4,2]
+x = np.random.choice(p,size = (10000,300))
+r = x.prod(axis = 1)
+```
+
+Using python I ran 10,000 simulations of flipping the coin 3 00 times. The simulation results show that the average return was 2,903 times our starting wealth. So, our intuition was correct this is an extremely profitable game we should probably take out a loan so we can win more!
+
+Before we do that though let us take a look at the distribution of outcomes. Just to make sure that tail events are not to disastrous.
+
+```{python}
+r_log = np.log(r)
+fig,ax = plt.subplots(figsize = (9,6))
+sns.kdeplot(x = r_log,ax = ax)
+ax.axvline(0)
+ax.set_xticks([x for x in range(-80,40,20)])
+ax.set_xticklabels([f"{np.exp(x):.1e}" for x in range(-80,40,20)])
+None
+```
+
+So playing this game gives us a very high chance of ending up broke. But we still had a very high expected value so whats going on. In essence there are some sample paths where a simulation ended making an obscene amount of money that drags the expected value up. But the vast majority of players in this game will lose everything.
+
+# Gurantee Not losing
+
+-   Introduce Kelly and geometric mean
+-   Apply Kelly to previous example
+-   The risk of going broke is not worth the return
+
+As we have shown there are scenarios where a bet can have a positive expected return, but its long run return converges to zero. However, if we use the geometric mean instead of the arithmetic mean we get a better estimate of our long run return.
+
+The arithmetic mean is the mean that most people think of when they think of the mean. Its the sum of all the values divided the sample size. The geometric mean is when we multiply all our values and take the $n^{th}$ root of the product. The geometric mean better captures the multiplicative nature of returns. So if we look at our toy example we get a geometric mean of $.89$ meaning our CAGR for this game is $-10\%$. See how this is more in line with what are simulations show. A ten percent decrease over 300 trials will wipe out your entire bankroll.
+
+So now that we know to judge our games off of their geometric mean instead of the arithmetic mean how can we use this to turn our game into a profitable one. Let's change our strategy, instead of betting our entire bankroll lets only bet a fraction. Figure \_ shows the simulation results of the same game but this time only betting $30\%$ of are bankroll each turn. These are radically different results! Instead of being guaranteed to lose money we are almost guaranteed to walk away with a sizable profit.
+
+```{python}
+p = [1*.7 + .3*.4,1*.7 + .3*2]
+x = np.random.choice(p,size = (10000,300))
+r_prod = x.prod(axis = 1)
+r_log = np.log(r_prod)
+fig,ax = plt.subplots(figsize = (9,6))
+sns.kdeplot(x = r_log,ax = ax)
+ax.axvline(0)
+ax.set_xticks([x for x in range(-5,30,5)])
+ax.set_xticklabels([f"{np.exp(x):.1e}" for x in range(-5,30,5)])
+None
+```
+
+Why are the results so different? Its because we increased the geometric mean by limiting our losses. This increase our geometric mean from $.89$ to $1.08$. And these returns compounded over 300 trials will give you dramatically different results.
+
+The reason that limiting your losses can have such a huge impact on your long run returns is that it allows you to survive longer. In our toy game you have an edge you can earn more than you lose on each flip. But, the loses can be catastrophic that a couple of them stop you from playing. By limiting your loses it allows you to keep playing the game in which you have an edge and compound your winnings over time.
+
+Now to determine what fraction of our bankroll to bet on a game we use something called the [Kelly Criterion](https://en.wikipedia.org/wiki/Kelly_criterion). Its a formula the gives you the fraction of your bankroll to bet to maximize your geometric return.
+
+# Conclustion
+
+-   Talk about survival
+-   Kelly philosophy
+
+Now all we have seen in this post is simple toy examples where the probabilities are known and the returns discrete. You may wonder how these ideas can be applied to something like the stock market. I think that take away is less about what the exact fraction you should put on each investment and more on guarantying your ability to stay in the market.
+
+No expected return is worth it if the risk is losing your money. An investor needs a solid amount in their emergency fund to guarantee that can stay in the market and allow that money to compound.

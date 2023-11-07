@@ -1,0 +1,11 @@
+{
+  "hash": "59fe4ac9c1aa7cd88f6a85c779fa57cc",
+  "result": {
+    "markdown": "---\ntitle: \"The Kelly Criterion\"\nauthor: \"Justin Thorp\"\ndate: \"2023-11-03\"\ncategories: [news, code, analysis]\nimage: \"image.jpg\"\n---\n\nThis is a post with executable code.\n\n::: {.cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nimport seaborn as sns\np = [.4,2]\nx = np.random.choice(p,size = (10000,100))\nr = x.prod(axis = 1)\nr = np.log(r)\nsns.kdeplot(x = r)\n```\n\n::: {.cell-output .cell-output-display execution_count=1}\n```\n<AxesSubplot:ylabel='Density'>\n```\n:::\n\n::: {.cell-output .cell-output-display}\n![](index_files/figure-html/cell-2-output-2.png){width=597 height=404}\n:::\n:::\n\n\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
