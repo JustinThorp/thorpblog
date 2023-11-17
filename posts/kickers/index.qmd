@@ -1,8 +1,8 @@
 ---
-title: "Brian Aubrey: The Greatest Kicker Ever?"
+title: "Brandon Aubrey: The Greatest Kicker Ever?"
 author: "Justin Thorp"
-date: "2023-09-06"
-categories: [news]
+date: "2023-11-16"
+categories: [nfl]
 execute:
   echo: false
 ---
@@ -17,33 +17,13 @@ from matplotlib.lines import Line2D
 
 # Introduction
 
--   Kickers are people maybe
-
-    -   Can be hero or villain at the end of close games
-
--   But how should we evaluate them
-
-    -   Raw counts are inadequate since it doesn't take into account distance
-
-    -   Each kicker has a different probability of making a kick once you account for distance
-
-    Kickers, despite their infrequent appearances in a game, they wield significant influence over their outcomes. The question lingers: how do we measure kickers proficiency? Raw counts, while seemingly comprehensive, falter by neglecting the crucial variable of kick distance, a factor that greatly impacts the probability of success. Delving deeper, the individual skill of each kicker further compounds the issue since each kicker has their own success probabilities distinct from the others. As games are decided on these pivotal moments, gauging a kicker's true skill demands a nuanced evaluation that considers these multifaceted variables.
-
-If you were to ask any football who the best kicker in the league is almost all would give you the same answer: Justin Tucker. The only fans who would argue against this are those of a questionable mental state. Luckily I am in the latter category of fans and by the end of this post I hope to bring you into this group as well.
+If you were to ask any football fan who the best kicker in the league is almost all would give you the same answer: Justin Tucker. The only fans who would argue against this are those of a questionable mental state. Luckily I am in the latter category of fans and by the end of this post I hope to bring you into this group as well.
 
 So, to make my argument that there is a kicker better then Justin Tucker we need to evaluate the kickers skills, but how can we do that. The most basic way is to just look at their field goals attempted (FGA) and see how many of them they made (FGM). This metric is easiest solution, but has a crucial flaw in that it does not take into account the distance of the FGA. Say we have two kickers both with a 100% field goal percentage, but one kicker has kicked all his kicks from 50 yards out vs the other who kicked all his kicks from 20 yards out. While these kickers have the same percentage one has had much more impressive resume.
 
-# Methodlogy
-
--   Bayesian hierarchical
--   Same slope different intercepts
+To analyze kickers we will be using a Bayesian hierarchical logistic regression model. This allows us to estimate the unique probability of a kicker making a kick at each distance. But also incorporates global data from all kickers into the estimate of the individual kickers. What this means is that for kickers who have not attempted many kicks their estimates will be close to the global average for all kickers, but those who have attempted a large number of kicks we will have more confidence in their estimates and they can deviate from the global average.
 
 # Results
-
--   Show sims
--   Isnt that Justin Tucker
--   Suprise
--   Is he really the best
 
 After simulating our posteriors distributions we obtained estimate for the probability of making a field goal fro each kicker and distance. @fig-1 has a line for each kicker showing their probability of making a kick from that distance.
 
@@ -53,7 +33,9 @@ SELECT
     i,
     value,
     MAX(kicker_player_name) AS name,
-    AVG(prob) AS prob
+    AVG(prob) AS prob,
+    quantile_disc(prob,.975) AS upper,
+    quantile_disc(prob,.025) AS lower
 FROM 'kicker_sims.parquet'
 GROUP BY i,value
 ''').df()
@@ -63,14 +45,14 @@ GROUP BY i,value
 #| label: fig-1
 #| fig-cap: "Posteriors Estimate of Success Probability"
 plot_df = data.pivot(index = 'value',columns = 'name',values = 'prob')
-fig,ax = plt.subplots(figsize = (9,6),facecolor = '#303030',dpi = 100)
+fig,ax = plt.subplots(figsize = (6,3),facecolor = '#3E3F39',dpi = 300)
 plot_df.plot(ax=ax,legend = False,color = 'grey',alpha =.4)
-ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 15)
-ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 15)
-ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 15)
+ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 10)
+ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 10)
+ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 10)
 #ax.axvline('1987-10-19',color = 'white',alpha = .4)
 ax.grid(color = '#4B4B4B',alpha = 1)
-ax.set_facecolor("#303030")
+ax.set_facecolor("#3E3F39")
 ax.spines[['right', 'top']].set_visible(False)
 ax.tick_params(axis='x', colors='#E1E1E1')
 ax.tick_params(axis='y', colors='#E1E1E1')
@@ -79,54 +61,62 @@ for side in ['bottom','top','right','left']:
 plt.show()
 ```
 
-As you can see most kickers are bunched together, but there is one kicker who is well above the rest. A valid assumption would be that that kicker is Justin Tucker. Which is also what I assumed when I first did this analysis. So lets highlight Tuckers line. @fig-2 shows that while Justin Tucker is above almost all kickers he is not the best so who is this kicker?
+As you can see most kickers are bunched together, but there is one kicker who is well above the rest. A valid assumption would be that that kicker is Justin Tucker. Which is also what I assumed when I first did this analysis. So lets highlight Tuckers line and also the top kickers line. @fig-2 shows that while Justin Tucker is above almost all kickers he is below Brandom Aubrey rookie kicker for the Dallas Cowboys. I assume many fans are not familiar with Aubrey, but he has had a very impressive start to his career making all 19 of his first 19 attempts.
 
 ```{python}
 #| label: fig-2
 #| fig-cap: "Posteriors Estimate of Success Probability"
-fig,ax = plt.subplots(figsize = (9,6),facecolor = '#303030',dpi = 100)
-
-#plot_df.plot(ax=ax,legend = False,color = 'grey',alpha =.4)
-for col in plot_df.columns:
-    ax.plot(plot_df.index,plot_df[col],color = 'grey',alpha =.4)
-plot_df['J.Tucker'].plot(ax=ax)
-ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 15)
-ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 15)
-ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 15)
-
-ax.grid(color = '#4B4B4B',alpha = 1)
-ax.set_facecolor("#303030")
-ax.spines[['right', 'top']].set_visible(False)
-ax.tick_params(axis='x', colors='#E1E1E1')
-ax.tick_params(axis='y', colors='#E1E1E1')
-for side in ['bottom','top','right','left']:
-    ax.spines[side].set_color('#E1E1E1')
-ax.legend()
-plt.show()
-```
-
-
-```{python}
-
-#| label: fig-3
-#| fig-cap: "Posteriors Estimate of Success Probability"
-fig,ax = plt.subplots(figsize = (9,6),facecolor = '#303030',dpi = 100)
+fig,ax = plt.subplots(figsize = (6,3),facecolor = '#3E3F39',dpi = 100)
 
 #plot_df.plot(ax=ax,legend = False,color = 'grey',alpha =.4)
 for col in plot_df.columns:
     ax.plot(plot_df.index,plot_df[col],color = 'grey',alpha =.4)
 plot_df['B.Aubrey'].plot(ax=ax)
-ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 15)
-ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 15)
-ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 15)
+plot_df['J.Tucker'].plot(ax=ax)
+
+ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 10)
+ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 10)
+ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 10)
 
 ax.grid(color = '#4B4B4B',alpha = 1)
-ax.set_facecolor("#303030")
+ax.set_facecolor("#3E3F39")
 ax.spines[['right', 'top']].set_visible(False)
 ax.tick_params(axis='x', colors='#E1E1E1')
 ax.tick_params(axis='y', colors='#E1E1E1')
 for side in ['bottom','top','right','left']:
     ax.spines[side].set_color('#E1E1E1')
-ax.legend()
+ax.legend(frameon = False,labelcolor = '#E1E1E1',fontsize = 10)
 plt.show()
 ```
+
+So obviously the big caveat here is the sample size. Tucker has attempted 422 kicks over his career compared to the only 19 that Aubrey has attempted. But the benefit of our Bayesian methodology is we can visualize our uncertainty in these estimates. @fig-3 Shows the uncertainty of our estimates. And as you can see there is much more uncertainty around Aubreys estimate opposed to Tuckers. So, while Aubrey has had a great start to his career we cannot say with a absolute certainty that he is better than Tucker.
+
+```{python}
+#| label: fig-3
+#| fig-cap: "Posteriors Estimate of Success Probability"
+fig,ax = plt.subplots(figsize = (6,3),facecolor = '#3E3F39',dpi = 100)
+plot_df2 = data[data['name'].isin(['J.Tucker','B.Aubrey'])]
+
+plot_df2 = plot_df2.groupby(['name','value'],as_index=False)[['prob','upper','lower']].mean(
+)
+for temp in plot_df2.groupby('name'):
+    temp_df = temp[1]
+    ax.plot(temp_df.value,temp_df.prob,label = temp[0])
+    ax.fill_between(temp_df.value,temp_df.lower,temp_df.upper,alpha = 0.2)
+
+ax.set_xlabel('Kick Distance',color = '#E1E1E1',fontsize = 10)
+ax.set_ylabel('Success Probability',color = '#E1E1E1',fontsize = 10)
+ax.set_title('Kicker Success Probability',color = '#E1E1E1',fontsize = 10)
+
+ax.grid(color = '#4B4B4B',alpha = 1)
+ax.set_facecolor("#3E3F39")
+ax.spines[['right', 'top']].set_visible(False)
+ax.tick_params(axis='x', colors='#E1E1E1')
+ax.tick_params(axis='y', colors='#E1E1E1')
+for side in ['bottom','top','right','left']:
+    ax.spines[side].set_color('#E1E1E1')
+ax.legend(frameon = False,labelcolor = '#E1E1E1',fontsize = 10)
+plt.show()
+```
+
+To conclude, Aubrey has had a great start to his career, but its too soon to say if hes better than Tucker. The results from our Bayesian model shows that while Aubrey is the only kicker to have a higher probability of making kicks than Tucker there is still much uncertainty about his estimate. How he finished his rookie season and beyond will ultimately decide if he will be the best kicker in the NFL. But if he does become the best remember I was the first to say so.
