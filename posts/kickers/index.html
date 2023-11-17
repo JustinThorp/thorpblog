@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Justin Thorp">
-<meta name="dcterms.date" content="2023-09-06">
+<meta name="dcterms.date" content="2023-11-16">
 
-<title>thorpblog - Brian Aubrey: The Greatest Kicker Ever?</title>
+<title>thorpblog - Brandon Aubrey: The Greatest Kicker Ever?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,9 +108,9 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Brian Aubrey: The Greatest Kicker Ever?</h1>
+      <h1 class="title">Brandon Aubrey: The Greatest Kicker Ever?</h1>
                                 <div class="quarto-categories">
-                <div class="quarto-category">news</div>
+                <div class="quarto-category">nfl</div>
               </div>
                   </div>
   </div>
@@ -128,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 6, 2023</p>
+        <p class="date">November 16, 2023</p>
       </div>
     </div>
     
@@ -148,36 +148,12 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<ul>
-<li><p>Kickers are people maybe</p>
-<ul>
-<li>Can be hero or villain at the end of close games</li>
-</ul></li>
-<li><p>But how should we evaluate them</p>
-<ul>
-<li><p>Raw counts are inadequate since it doesn’t take into account distance</p></li>
-<li><p>Each kicker has a different probability of making a kick once you account for distance</p></li>
-</ul>
-<p>Kickers, despite their infrequent appearances in a game, they wield significant influence over their outcomes. The question lingers: how do we measure kickers proficiency? Raw counts, while seemingly comprehensive, falter by neglecting the crucial variable of kick distance, a factor that greatly impacts the probability of success. Delving deeper, the individual skill of each kicker further compounds the issue since each kicker has their own success probabilities distinct from the others. As games are decided on these pivotal moments, gauging a kicker’s true skill demands a nuanced evaluation that considers these multifaceted variables.</p></li>
-</ul>
-<p>If you were to ask any football who the best kicker in the league is almost all would give you the same answer: Justin Tucker. The only fans who would argue against this are those of a questionable mental state. Luckily I am in the latter category of fans and by the end of this post I hope to bring you into this group as well.</p>
+<p>If you were to ask any football fan who the best kicker in the league is almost all would give you the same answer: Justin Tucker. The only fans who would argue against this are those of a questionable mental state. Luckily I am in the latter category of fans and by the end of this post I hope to bring you into this group as well.</p>
 <p>So, to make my argument that there is a kicker better then Justin Tucker we need to evaluate the kickers skills, but how can we do that. The most basic way is to just look at their field goals attempted (FGA) and see how many of them they made (FGM). This metric is easiest solution, but has a crucial flaw in that it does not take into account the distance of the FGA. Say we have two kickers both with a 100% field goal percentage, but one kicker has kicked all his kicks from 50 yards out vs the other who kicked all his kicks from 20 yards out. While these kickers have the same percentage one has had much more impressive resume.</p>
-</section>
-<section id="methodlogy" class="level1">
-<h1>Methodlogy</h1>
-<ul>
-<li>Bayesian hierarchical</li>
-<li>Same slope different intercepts</li>
-</ul>
+<p>To analyze kickers we will be using a Bayesian hierarchical logistic regression model. This allows us to estimate the unique probability of a kicker making a kick at each distance. But also incorporates global data from all kickers into the estimate of the individual kickers. What this means is that for kickers who have not attempted many kicks their estimates will be close to the global average for all kickers, but those who have attempted a large number of kicks we will have more confidence in their estimates and they can deviate from the global average.</p>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
-<ul>
-<li>Show sims</li>
-<li>Isnt that Justin Tucker</li>
-<li>Suprise</li>
-<li>Is he really the best</li>
-</ul>
 <p>After simulating our posteriors distributions we obtained estimate for the probability of making a field goal fro each kicker and distance. <a href="#fig-1">Figure&nbsp;1</a> has a line for each kicker showing their probability of making a kick from that distance.</p>
 <div class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
@@ -189,7 +165,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>As you can see most kickers are bunched together, but there is one kicker who is well above the rest. A valid assumption would be that that kicker is Justin Tucker. Which is also what I assumed when I first did this analysis. So lets highlight Tuckers line. <a href="#fig-2">Figure&nbsp;2</a> shows that while Justin Tucker is above almost all kickers he is not the best so who is this kicker?</p>
+<p>As you can see most kickers are bunched together, but there is one kicker who is well above the rest. A valid assumption would be that that kicker is Justin Tucker. Which is also what I assumed when I first did this analysis. So lets highlight Tuckers line and also the top kickers line. <a href="#fig-2">Figure&nbsp;2</a> shows that while Justin Tucker is above almost all kickers he is below Brandom Aubrey rookie kicker for the Dallas Cowboys. I assume many fans are not familiar with Aubrey, but he has had a very impressive start to his career making all 19 of his first 19 attempts.</p>
 <div class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div id="fig-2" class="quarto-figure quarto-figure-center anchored">
@@ -200,6 +176,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
+<p>So obviously the big caveat here is the sample size. Tucker has attempted 422 kicks over his career compared to the only 19 that Aubrey has attempted. But the benefit of our Bayesian methodology is we can visualize our uncertainty in these estimates. <a href="#fig-3">Figure&nbsp;3</a> Shows the uncertainty of our estimates. And as you can see there is much more uncertainty around Aubreys estimate opposed to Tuckers. So, while Aubrey has had a great start to his career we cannot say with a absolute certainty that he is better than Tucker.</p>
 <div class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div id="fig-3" class="quarto-figure quarto-figure-center anchored">
@@ -210,6 +187,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
+<p>To conclude, Aubrey has had a great start to his career, but its too soon to say if hes better than Tucker. The results from our Bayesian model shows that while Aubrey is the only kicker to have a higher probability of making kicks than Tucker there is still much uncertainty about his estimate. How he finished his rookie season and beyond will ultimately decide if he will be the best kicker in the NFL. But if he does become the best remember I was the first to say so.</p>
 
 
 </section>
